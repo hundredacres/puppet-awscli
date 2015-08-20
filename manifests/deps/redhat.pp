@@ -3,8 +3,8 @@
 # This module manages awscli dependencies for redhat $::osfamily.
 #
 class awscli::deps::redhat {
-  include ::epel
-  Package { require => Class['epel'] }
+  include yum::repo::epel
+  Package { require => Class['yum::repo::epel'] }
 
   if ! defined(Package['python-devel']) {
     package { 'python-devel': ensure => installed }
