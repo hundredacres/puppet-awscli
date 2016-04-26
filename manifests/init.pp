@@ -37,11 +37,11 @@
 #
 class awscli (
   $version     = 'present',
-  $manage_deps = $awcli::params::manage_deps,
+  $manage_deps = $awscli::params::manage_deps,
   $pkg_dev     = $awscli::params::pkg_dev,
   $pkg_pip     = $awscli::params::pkg_pip
 ) inherits awscli::params {
-  $real_deps = $manage_deps ? {
+  $real_deps = $awscli::manage_deps ? {
     true  => "Class['awscli::deps']",
     false => undef,
   }
