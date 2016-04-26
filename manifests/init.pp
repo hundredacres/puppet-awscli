@@ -32,12 +32,14 @@
 # Copyright 2014 Justin Downing
 #
 class awscli (
-  $version = 'present',
-  $pkg_dev = $awscli::params::pkg_dev,
-  $pkg_pip = $awscli::params::pkg_pip
+  $version     = 'present',
+  $manage_deps = $awcli::params::manage_deps,
+  $pkg_dev     = $awscli::params::pkg_dev,
+  $pkg_pip     = $awscli::params::pkg_pip
 ) inherits awscli::params {
-  include awscli::deps
-
+  if $manage_deps {
+    include awscli::deps
+  }
   package { 'awscli':
     ensure   => $version,
     provider => 'pip',
