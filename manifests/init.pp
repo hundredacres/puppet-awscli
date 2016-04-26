@@ -9,6 +9,10 @@
 #    Default: 'present'
 #    This variable is required.
 #
+#  [$manage_deps]
+#    Handles installing package deps.
+#    Default: false
+#
 #  [$pkg_dev]
 #    Provides ability to install a specific Dev package by name.
 #    Default: See awscli::params Class
@@ -37,12 +41,16 @@ class awscli (
   $pkg_dev     = $awscli::params::pkg_dev,
   $pkg_pip     = $awscli::params::pkg_pip
 ) inherits awscli::params {
+  $real_deps = $manage_deps ? {
+    true  => "Class['awscli::deps']",
+    false => undef,
+  }
   if $manage_deps {
     include awscli::deps
   }
   package { 'awscli':
     ensure   => $version,
     provider => 'pip',
-    require  => Class['awscli::deps'],
+    require  => $real_deps,
   }
 }
