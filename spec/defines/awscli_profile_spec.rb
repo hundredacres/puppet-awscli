@@ -2,15 +2,13 @@ require 'spec_helper'
 
 describe 'awscli::profile', :type => :define do
   context 'on supported operatingsystems' do
-    [ 'darwin', 'debian', 'redhat'].each do |osfamily|
+    ['darwin', 'debian', 'redhat'].each do |osfamily|
       describe "#{osfamily} installation" do
         let(:facts) { {
           :osfamily       => osfamily,
           :concat_basedir => '/var/lib/puppet/concat/'
         } }
-
         let(:title) { 'test_profile' }
-
         let(:params) { { } }
 
         it 'should create profile for root if no user is given' do
@@ -18,12 +16,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'root',
-            :group  => 'root'
+            :group  => 'root',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/root/.aws/config').with(
           {
             :owner => 'root',
-            :group => 'root'
+            :group => 'root',
+            :mode   => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -41,9 +41,7 @@ describe 'awscli::profile', :type => :define do
           :osfamily       => osfamily,
           :concat_basedir => '/var/lib/puppet/concat/'
         } }
-
         let(:title) { 'test_profile' }
-
         let(:params) { {
           'aws_access_key_id'     => 'TESTAWSACCESSKEYID',
           'aws_secret_access_key' => 'TESTSECRETACCESSKEY'
@@ -54,12 +52,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'root',
-            :group  => 'root'
+            :group  => 'root',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/root/.aws/config').with(
           {
             :owner => 'root',
-            :group => 'root'
+            :group => 'root',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -68,7 +68,8 @@ describe 'awscli::profile', :type => :define do
           is_expected.to contain_concat('/root/.aws/credentials').with(
           {
             :owner => 'root',
-            :group => 'root'
+            :group => 'root',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
           {
@@ -84,12 +85,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'test',
-            :group  => 'test'
+            :group  => 'test',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/home/test/.aws/config').with(
           {
             :owner => 'test',
-            :group => 'test'
+            :group => 'test',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -98,7 +101,8 @@ describe 'awscli::profile', :type => :define do
           is_expected.to contain_concat('/home/test/.aws/credentials').with(
           {
             :owner => 'test',
-            :group => 'test'
+            :group => 'test',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
           {
@@ -115,12 +119,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'test',
-            :group  => 'testGroup'
+            :group  => 'testGroup',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/home/test/.aws/config').with(
           {
             :owner => 'test',
-            :group => 'testGroup'
+            :group => 'testGroup',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -129,7 +135,8 @@ describe 'awscli::profile', :type => :define do
           is_expected.to contain_concat('/home/test/.aws/credentials').with(
           {
             :owner => 'test',
-            :group => 'testGroup'
+            :group => 'testGroup',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
           {
@@ -146,12 +153,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'test',
-            :group  => 'test'
+            :group  => 'test',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/tmp/.aws/config').with(
           {
             :owner => 'test',
-            :group => 'test'
+            :group => 'test',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -160,7 +169,8 @@ describe 'awscli::profile', :type => :define do
           is_expected.to contain_concat('/tmp/.aws/credentials').with(
           {
             :owner => 'test',
-            :group => 'test'
+            :group => 'test',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
           {
@@ -178,12 +188,14 @@ describe 'awscli::profile', :type => :define do
           {
             :ensure => 'directory',
             :owner  => 'test',
-            :group  => 'testGroup'
+            :group  => 'testGroup',
+            :mode   => '0700'
           })
           is_expected.to contain_concat('/tmp/.aws/config').with(
           {
             :owner => 'test',
-            :group => 'testGroup'
+            :group => 'testGroup',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
           {
@@ -192,14 +204,14 @@ describe 'awscli::profile', :type => :define do
           is_expected.to contain_concat('/tmp/.aws/credentials').with(
           {
             :owner => 'test',
-            :group => 'testGroup'
+            :group => 'testGroup',
+            :mode  => '0600'
           })
           is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
           {
             :target => '/tmp/.aws/credentials'
           })
         end
-
       end
     end
   end
@@ -223,12 +235,14 @@ describe 'awscli::profile', :type => :define do
       {
         :ensure => 'directory',
         :owner  => 'test',
-        :group  => 'staff'
+        :group  => 'staff',
+        :mode   => '0700'
       })
       is_expected.to contain_concat('/Users/test/.aws/config').with(
       {
         :owner => 'test',
-        :group => 'staff'
+        :group => 'staff',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
       {
@@ -237,7 +251,8 @@ describe 'awscli::profile', :type => :define do
       is_expected.to contain_concat('/Users/test/.aws/credentials').with(
       {
         :owner => 'test',
-        :group => 'staff'
+        :group => 'staff',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
       {
@@ -253,12 +268,14 @@ describe 'awscli::profile', :type => :define do
       {
         :ensure => 'directory',
         :owner  => 'test',
-        :group  => 'testGroup'
+        :group  => 'testGroup',
+        :mode   => '0700'
       })
       is_expected.to contain_concat('/Users/test/.aws/config').with(
       {
         :owner => 'test',
-        :group => 'testGroup'
+        :group => 'testGroup',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
       {
@@ -267,7 +284,8 @@ describe 'awscli::profile', :type => :define do
       is_expected.to contain_concat('/Users/test/.aws/credentials').with(
       {
         :owner => 'test',
-        :group => 'testGroup'
+        :group => 'testGroup',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
       {
@@ -284,12 +302,14 @@ describe 'awscli::profile', :type => :define do
       {
         :ensure => 'directory',
         :owner  => 'test',
-        :group  => 'staff'
+        :group  => 'staff',
+        :mode   => '0700'
       })
       is_expected.to contain_concat('/tmp/.aws/config').with(
       {
         :owner => 'test',
-        :group => 'staff'
+        :group => 'staff',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
       {
@@ -298,7 +318,8 @@ describe 'awscli::profile', :type => :define do
       is_expected.to contain_concat('/tmp/.aws/credentials').with(
       {
         :owner => 'test',
-        :group => 'staff'
+        :group => 'staff',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
       {
@@ -316,12 +337,14 @@ describe 'awscli::profile', :type => :define do
       {
         :ensure => 'directory',
         :owner  => 'test',
-        :group  => 'testGroup'
+        :group  => 'testGroup',
+        :mode   => '0700'
       })
       is_expected.to contain_concat('/tmp/.aws/config').with(
       {
         :owner => 'test',
-        :group => 'testGroup'
+        :group => 'testGroup',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-config' ).with(
       {
@@ -330,13 +353,13 @@ describe 'awscli::profile', :type => :define do
       is_expected.to contain_concat('/tmp/.aws/credentials').with(
       {
         :owner => 'test',
-        :group => 'testGroup'
+        :group => 'testGroup',
+        :mode  => '0600'
       })
       is_expected.to contain_concat__fragment( 'test_profile-credentials' ).with(
       {
         :target => '/tmp/.aws/credentials'
       })
     end
-
   end
 end

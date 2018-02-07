@@ -10,16 +10,21 @@
 #
 # Copyright 2014 Justin Downing
 #
-class awscli::deps {
+class awscli::deps (
+  $proxy = $awscli::params::proxy,
+) inherits awscli::params {
   case $::osfamily {
     'Debian': {
-      include awscli::deps::debian
+      contain awscli::deps::debian
     }
     'RedHat': {
-      include awscli::deps::redhat
+      class { 'awscli::deps::redhat':
+        proxy => $proxy,
+      }
+      contain awscli::deps::redhat
     }
     'Darwin': {
-      include awscli::deps::osx
+      contain awscli::deps::osx
     }
     default:  { fail("The awscli module does not support ${::osfamily}") }
   }

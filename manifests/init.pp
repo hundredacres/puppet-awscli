@@ -23,6 +23,27 @@
 #    Default: See awscli::params Class
 #    This variable is optional.
 #
+#  [$manage_epel]
+#    Boolean flag to install the EPEL repositories.
+#    Default: true
+#    This variable is optional.
+#
+#  [$install_pkgdeps]
+#    Boolean flag to install the package dependencies or not
+#    Default: true
+#
+#  [$install_pip]
+#    Boolean flag to install pip or not
+#    Default: true
+#
+#  [$proxy]
+#    String proxy variable for use with EPEL module
+#    Default: undef
+#
+#  [$install_options]
+#    Array of install options for the awscli Pip package
+#    Default: undef
+#
 # === Examples
 #
 #  class { awscli: }
@@ -36,21 +57,33 @@
 # Copyright 2014 Justin Downing
 #
 class awscli (
-  $version     = 'present',
+  $version          = 'present',
   $manage_deps = $awscli::params::manage_deps,
-  $pkg_dev     = $awscli::params::pkg_dev,
-  $pkg_pip     = $awscli::params::pkg_pip
+  $pkg_dev          = $awscli::params::pkg_dev,
+  $pkg_pip          = $awscli::params::pkg_pip,
+  $manage_epel      = true,
+  $install_pkgdeps  = true,
+  $install_pip      = true,
+  $proxy            = $awscli::params::proxy,
+  $install_options  = $awscli::params::install_options,
 ) inherits awscli::params {
   $real_deps = $awscli::manage_deps ? {
     true  => "Class['awscli::deps']",
     false => undef,
   }
   if $manage_deps {
-    include awscli::deps
+    class { '::awscli::deps':
+      proxy => $proxy,
+    }
   }
+
   package { 'awscli':
-    ensure   => $version,
-    provider => 'pip',
-    require  => $real_deps,
+    ensure          => $version,
+    provider        => 'pip',
+    install_options => $install_options,
+    require         => [
+      Package[$pkg_pip],
+      Class['awscli::deps'],
+    ],
   }
 }

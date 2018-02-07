@@ -4,6 +4,10 @@
 #
 # === Variables
 #
+# [$ensure]
+#   Control whether the profile should be present or not
+#   Default: present
+#
 # [$user]
 #   The user for whom the profile will be installed
 #
@@ -21,9 +25,23 @@
 #   The aws_secret_access_key for this profile. If not specified, aws-cli can
 #   can use IAM roles to authenticate.
 #
+# [$role_arn]
+#   The ARN for the role to use in this profile. The source_profile must
+#   be supplied when role_arn is specified
+#
+# [$source_profile]
+#   The profile to use for credentials to assume the specified role
+#
+# [$role_session_name]
+#   An identifier for the assumed role session
+#
 # [$aws_region]
 #   The aws_region for this profile
 #   Default: us-east-1
+#
+# [$profile_name]
+#   The name of the AWS profile
+#   Default: default
 #
 # [$output]
 #   The output format used for this profile
@@ -31,26 +49,37 @@
 #
 # === Example
 #
-# awscli::profile { 'default':
+# awscli::profile { 'tsmith-awscli':
 #   user                  => 'tsmith',
 #   aws_access_key_id     => 'access_key',
 #   aws_secret_access_key => 'secret_key',
 #   aws_region            => 'us-west-2',
+#   role_arn              => 'arn:aws:iam::123456789012:role/MyRole',
+#   source_profile        => 'user',
+#   role_session_name     => 'mysession',
+#   profile_name          => 'default',
 #   output                => 'text',
 # }
 #
 define awscli::profile(
+  $ensure                = 'present',
   $user                  = 'root',
   $group                 = undef,
   $homedir               = undef,
   $aws_access_key_id     = undef,
   $aws_secret_access_key = undef,
+  $role_arn              = undef,
+  $source_profile        = undef,
+  $role_session_name     = undef,
   $aws_region            = 'us-east-1',
+  $profile_name          = 'default',
   $output                = 'json',
 ) {
   if $aws_access_key_id == undef and $aws_secret_access_key == undef {
     info ('AWS keys for awscli::profile. Your will need IAM roles configured.')
     $skip_credentials = true
+  } else {
+    $skip_credentials = false
   }
 
   if $homedir {
@@ -84,7 +113,8 @@ define awscli::profile(
     file { "${homedir_real}/.aws":
       ensure => 'directory',
       owner  => $user,
-      group  => $group_real
+      group  => $group_real,
+      mode   => '0700',
     }
   }
 
@@ -92,29 +122,37 @@ define awscli::profile(
   if ! $skip_credentials {
     if !defined(Concat["${homedir_real}/.aws/credentials"]) {
       concat { "${homedir_real}/.aws/credentials":
-        ensure => 'present',
-        owner  => $user,
-        group  => $group_real
+        ensure  => 'present',
+        owner   => $user,
+        group   => $group_real,
+        mode    => '0600',
+        require => File["${homedir_real}/.aws"],
       }
     }
 
-    concat::fragment { "${title}-credentials":
-      target  => "${homedir_real}/.aws/credentials",
-      content => template('awscli/credentials_concat.erb')
+    if ( $ensure == 'present' ) {
+      concat::fragment { "${title}-credentials":
+        target  => "${homedir_real}/.aws/credentials",
+        content => template('awscli/credentials_concat.erb'),
+      }
     }
   }
 
   # setup config
   if !defined(Concat["${homedir_real}/.aws/config"]) {
     concat { "${homedir_real}/.aws/config":
-      ensure => 'present',
-      owner  => $user,
-      group  => $group_real
+      ensure  => 'present',
+      owner   => $user,
+      group   => $group_real,
+      mode    => '0600',
+      require => File["${homedir_real}/.aws"],
     }
   }
 
-  concat::fragment { "${title}-config":
-    target  => "${homedir_real}/.aws/config",
-    content => template('awscli/config_concat.erb')
+  if ( $ensure == 'present' ) {
+    concat::fragment { "${title}-config":
+      target  => "${homedir_real}/.aws/config",
+      content => template('awscli/config_concat.erb'),
+    }
   }
 }
