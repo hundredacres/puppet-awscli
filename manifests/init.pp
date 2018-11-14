@@ -82,7 +82,7 @@ class awscli (
     provider        => 'pip',
     install_options => $install_options,
     require         => [
-      #Package[$pkg_pip],
+      Package['pip'],
       Class['awscli::deps'],
     ],
   }
