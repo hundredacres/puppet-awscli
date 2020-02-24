@@ -86,7 +86,7 @@ define awscli::profile(
     $homedir_real = $homedir
   } else {
     if $user != 'root' {
-      $homedir_real = $::osfamily? {
+      $homedir_real = $::os['family']? {
         'Darwin' => "/Users/${user}",
         default  => "/home/${user}"
       }
@@ -97,7 +97,7 @@ define awscli::profile(
 
   if ($group == undef) {
     if $user != 'root' {
-      $group_real = $::osfamily? {
+      $group_real = $::os['family']? {
         'Darwin' => 'staff',
         default  => $user
       }
@@ -122,11 +122,12 @@ define awscli::profile(
   if ! $skip_credentials {
     if !defined(Concat["${homedir_real}/.aws/credentials"]) {
       concat { "${homedir_real}/.aws/credentials":
-        ensure  => 'present',
-        owner   => $user,
-        group   => $group_real,
-        mode    => '0600',
-        require => File["${homedir_real}/.aws"],
+        ensure    => 'present',
+        owner     => $user,
+        group     => $group_real,
+        mode      => '0600',
+        show_diff => false,
+        require   => File["${homedir_real}/.aws"],
       }
     }
 

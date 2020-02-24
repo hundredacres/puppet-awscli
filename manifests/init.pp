@@ -36,6 +36,9 @@
 #    Boolean flag to install pip or not
 #    Default: true
 #
+#  [$provider]
+#    One of "pip" or "apt"
+#
 #  [$proxy]
 #    String proxy variable for use with EPEL module
 #    Default: undef
@@ -64,26 +67,31 @@ class awscli (
   $manage_epel      = true,
   $install_pkgdeps  = true,
   $install_pip      = true,
+  $provider         = 'pip',
   $proxy            = $awscli::params::proxy,
   $install_options  = $awscli::params::install_options,
 ) inherits awscli::params {
-  $real_deps = $awscli::manage_deps ? {
-    true  => "Class['awscli::deps']",
-    false => undef,
-  }
-  if $manage_deps {
-    class { '::awscli::deps':
-      proxy => $proxy,
-    }
-  }
+  case $provider {
+    'pip': {
+      class { '::awscli::deps':
+        proxy => $proxy,
+      }
 
-  package { 'awscli':
-    ensure          => $version,
-    provider        => 'pip',
-    install_options => $install_options,
-    require         => [
-      #Package[$pkg_pip],
-      Class['awscli::deps'],
-    ],
+      package { 'awscli':
+        ensure          => $version,
+        provider        => 'pip',
+        install_options => $install_options,
+        require         => [
+          Package[$pkg_pip],
+          Class['awscli::deps'],
+        ],
+      }
+    }
+
+    default: {
+      package { 'awscli':
+        ensure => $version,
+      }
+    }
   }
 }
