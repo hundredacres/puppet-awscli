@@ -1,6 +1,6 @@
 {
   "name": "jdowning-awscli",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "author": "Justin Downing",
   "summary": "Install awscli",
   "license": "Apache-2.0",
@@ -10,8 +10,8 @@
   "dependencies": [
     { "name": "example42/yum",  "version_requirement": ">= 2.0.0" },
     {
-      "name": "stahnma/epel",
-      "version_requirement": ">= 1.0.0 <2.0.0"
+      "name": "puppet/epel",
+      "version_requirement": ">= 3.0.0 <3.99.0"
     },
     {
       "name": "puppetlabs/stdlib",
@@ -36,7 +36,8 @@
       "operatingsystemrelease": [
         "5",
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
@@ -84,7 +85,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.4.3 < 5.0.0"
+      "version_requirement": ">= 3.4.3 <= 6.99.0"
     }
   ],
   "description": "Install awscli",
